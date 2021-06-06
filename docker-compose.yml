@@ -13,7 +13,9 @@ services:
     volumes: 
       - ./app:/usr/src/app
     depends_on: 
-      - db
+      db:
+        condition: service_healthy
+
   nginx:
     build: nginx/.
     image: turnes/fullcycle2-desafio-docker-nginx-nodejs:nginx
@@ -43,6 +45,10 @@ services:
       - ./mysql/people.sql:/docker-entrypoint-initdb.d/people.sql
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
 
 networks:
   app-network:
