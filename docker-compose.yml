@@ -5,7 +5,7 @@ services:
     image: turnes/fullcycle2-desafio-docker-nginx-nodejs:app
     container_name: fc2-desafiodocker-app
     restart: unless-stopped
-    env_file: .env-sample
+    env_file: .env
     networks: 
       - app-network
     ports: 
