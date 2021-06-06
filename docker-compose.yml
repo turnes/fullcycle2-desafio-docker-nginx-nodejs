@@ -1,0 +1,47 @@
+version: "3"
+services:
+  app:
+    build: app/.
+    image: turnes/fullcycle2-desafio-docker-nginx-nodejs:app
+    container_name: fc2-desafiodocker-app
+    restart: unless-stopped
+    env_file: .env-sample
+    networks: 
+      - app-network
+    ports: 
+      - "3000:3000"
+    volumes: 
+      - ./app:/usr/src/app
+    depends_on: 
+      - db
+  nginx:
+    build: nginx/.
+    image: turnes/fullcycle2-desafio-docker-nginx-nodejs:nginx
+    container_name: fc2-desafiodocker-nginx
+    ports:
+      - "8080:80"
+    networks: 
+      - app-network
+  db:
+    build: mysql/.      
+    image: turnes/fullcycle2-desafio-docker-nginx-nodejs:mysql
+    container_name: fc2-desafiodocker-db
+    command: --innodb-use-native-aio=0
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+      - ./mysql/people.sql:/docker-entrypoint-initdb.d/people.sql
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
